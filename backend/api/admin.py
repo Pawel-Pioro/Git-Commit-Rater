@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import CommitMessage, Scenario
 
-# Register your models here.
+admin.site.register(CommitMessage)
+admin.site.register(Scenario)
