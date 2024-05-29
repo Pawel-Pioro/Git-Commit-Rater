@@ -8,7 +8,7 @@ def ai_function() -> dict:
     result = {"scenario":"Some change has happened", "code":"import random"}
     return result
 
-def rate_message(message:str, scenario:str) -> dict:
+def rate_message(message:str, scenario:int) -> dict:
     #rating code ....
     return {"rate":9.0, "feedback":"Some gebbirish"}
 
@@ -25,7 +25,7 @@ def commit_message(request):
     serializer = CommitSerializer(data=message)
     if serializer.is_valid(raise_exception=True):
         message = serializer.save()
-        result = rate_message(message.commit_message, message.scenario)
+        result = rate_message(message.commit_message, message.scenario.pk)
         message.rate = result['rate']
         return Response(result)
     return Response({"Error":"bad request"}, status=400)
