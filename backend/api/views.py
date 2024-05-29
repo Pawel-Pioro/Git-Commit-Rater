@@ -41,7 +41,7 @@ def rate_message(message:str, scenario) -> dict:
     #rating code ....
     return {"rate":9.0, "feedback":"Some gebbirish"}
 
-@api_view(["GET"])
+@api_view(["POST"])
 def generate_scenario(request):
     scenario = ai_function()
     instance = Scenario.objects.create(scenario=scenario['scenario'], code=scenario['code'])
