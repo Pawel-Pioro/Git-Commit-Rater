@@ -9,3 +9,5 @@ class CommitMessage(models.Model):
 class Scenario(models.Model):
     code = models.CharField(max_length=1024)
     scenario = models.CharField(max_length=1024)
+    language = models.CharField(max_length=20)
+    project_topic = models.CharField(max_length=1024)

@@ -33,13 +33,11 @@ def getAiResponse(prompt):
     dr.quit() 
     return " ".join(all_spans[6:-7]) 
 
-def ai_function() -> dict:
+def ai_function():
     aiResult = getAiResponse("Generate me a scenario and some code for it")
     print(aiResult)
-    result = {"scenario":"Some change has happened", "code":"import random"}
-    return result
 
-def rate_message(message:str, scenario:int) -> dict:
+def rate_message(message:str, scenario) -> dict:
     #rating code ....
     return {"rate":9.0, "feedback":"Some gebbirish"}
 
@@ -56,7 +54,7 @@ def commit_message(request):
     serializer = CommitSerializer(data=message)
     if serializer.is_valid(raise_exception=True):
         message = serializer.save()
-        result = rate_message(message.commit_message, message.scenario.pk)
+        result = rate_message(message.commit_message, message.scenario)
         message.rate = result['rate']
         return Response(result)
     return Response({"Error":"bad request"}, status=400)
