@@ -33,9 +33,10 @@ def getAiResponse(prompt):
     dr.quit() 
     return " ".join(all_spans[6:-7]) 
 
-def ai_function():
-    aiResult = getAiResponse("Generate me a scenario and some code for it")
-    print(aiResult)
+def ai_function(scenario):
+    prompt = f"Generate a fake scenario where a git change in a code base written in {scenario.language} happened about {scenario.topic}. Return a few scenario and the code. This will be used to ask the user to explain the code change"
+    result = getAiResponse(prompt)
+
 
 def rate_message(message:str, scenario) -> dict:
     #rating code ....
