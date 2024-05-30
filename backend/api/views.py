@@ -33,30 +33,35 @@ def getAiResponse(prompt):
     dr.quit() 
     return " ".join(all_spans[6:-7]) 
 
-def ai_function(scenario):
-    prompt = f"Generate a fake scenario where a git change in a code base written in {scenario.language} happened about {scenario.topic}. Return a few scenario and the code. This will be used to ask the user to explain the code change"
+def ai_function(language, topic):
+    prompt = f"Generate a fake scenario where a git change in a code base written in {language} happened about {topic}. Return a few sentences about the scenario and the code. This will be used to ask the user to explain the code change"
     result = getAiResponse(prompt)
-
+    return {"scenario": result}
 
 def rate_message(message:str, scenario) -> dict:
-    #rating code ....
-    return {"rate":9.0, "feedback":"Some gebbirish"}
+    scenarioObj = Scenario.objects.get(pk=scenario)
+    prompt = f"Using the following scenario: {scenarioObj.scenario[:250]} and the following commit message: '{message}', please rate the commit message on a scale of 1 to 10 and provide a short 50 word paragraph on improvement, keep it short and simple"
+    result = getAiResponse(prompt)  
+
+    return {"feedback": result}
 
 @api_view(["POST"])
 def generate_scenario(request):
-    scenario = ai_function()
-    instance = Scenario.objects.create(scenario=scenario['scenario'], code=scenario['code'])
+    language, topic = request.data['language'], request.data['topic']
+    scenario = ai_function(language, topic)
+    instance = Scenario.objects.create(scenario=scenario['scenario'])
     serializer = ScenarioSerializer(instance=instance)
-    return Response(serializer.data)
+    return Response({**serializer.data, "key": instance.pk})
 
 @api_view(["POST"])
 def commit_message(request):
-    message = request.data 
-    serializer = CommitSerializer(data=message)
+    userInput = request.data 
+    serializer = CommitSerializer(data=userInput)
     if serializer.is_valid(raise_exception=True):
         message = serializer.save()
-        result = rate_message(message.commit_message, message.scenario)
-        message.rate = result['rate']
+        result = rate_message(message.commit_message, message.key)
+        message.rate = result['feedback']
+        message.save()
         return Response(result)
     return Response({"Error":"bad request"}, status=400)
     
